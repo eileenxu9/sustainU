@@ -1,9 +1,11 @@
 C:/Users/TW/Desktop/sustainU/frontend/build/windows/x64/runner/Debug/data/icudtl.dat
 C:/Users/TW/Desktop/sustainU/frontend/build/windows/x64/runner/Debug/flutter_windows.dll
+C:/Users/TW/Desktop/sustainU/frontend/build/windows/x64/runner/Debug/file_selector_windows_plugin.dll
 C:/Users/TW/Desktop/sustainU/frontend/build/windows/x64/runner/Debug/data/flutter_assets/AssetManifest.bin
 C:/Users/TW/Desktop/sustainU/frontend/build/windows/x64/runner/Debug/data/flutter_assets/AssetManifest.json
 C:/Users/TW/Desktop/sustainU/frontend/build/windows/x64/runner/Debug/data/flutter_assets/FontManifest.json
 C:/Users/TW/Desktop/sustainU/frontend/build/windows/x64/runner/Debug/data/flutter_assets/fonts/MaterialIcons-Regular.otf
+C:/Users/TW/Desktop/sustainU/frontend/build/windows/x64/runner/Debug/data/flutter_assets/images/good_food.jpg
 C:/Users/TW/Desktop/sustainU/frontend/build/windows/x64/runner/Debug/data/flutter_assets/images/NYU_Torch.png
 C:/Users/TW/Desktop/sustainU/frontend/build/windows/x64/runner/Debug/data/flutter_assets/images/wsp.jpg
 C:/Users/TW/Desktop/sustainU/frontend/build/windows/x64/runner/Debug/data/flutter_assets/kernel_blob.bin

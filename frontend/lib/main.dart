@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'screens/meal_swipe_screen.dart'; 
+// import 'screens/meal_swipe_screen.dart'; 
+// import 'screens/post_food_sharing_screen.dart'; 
 
 
 void main() {
@@ -13,7 +14,9 @@ class SustainUApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MealSwipeScreen(),
+      home: LoginPage(),
+      // home: MealSwipeScreen(),
+      // home: PostFoodSharingScreen(),
     );
   }
 }
