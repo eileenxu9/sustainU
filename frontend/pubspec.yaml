@@ -32,6 +32,11 @@ dependencies:
     sdk: flutter
   http: ^0.13.5
   flutter_secure_storage: ^8.0.0
+  image_picker: ^0.8.7+4
+  google_maps_flutter: ^2.2.2
+  geolocator: ^9.0.1
+  flutter_dotenv: ^5.0.2
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -61,6 +66,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - .env
     - images/wsp.jpg
     - images/profile.png
     - images/NYUTorch.png

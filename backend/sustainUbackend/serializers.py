@@ -15,6 +15,7 @@ class FoodItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = FoodItem
         fields = '__all__'
+        read_only_fields = ['posted_by']
 
 class RestaurantDealSerializer(serializers.ModelSerializer):
     class Meta:

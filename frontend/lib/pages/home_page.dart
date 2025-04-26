@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'feed_page.dart';
 import 'swipe_exchange_page.dart';
+import 'community_fridges_page.dart';
 import 'rewards_page.dart';
 import 'profile_page.dart';
 
@@ -15,6 +16,7 @@ class _HomePageState extends State<HomePage> {
   static const List<Widget> _pages = [
     FeedPage(),
     SwipeExchangePage(),
+    CommunityFridgesPage(),
     RewardsPage(),
     ProfilePage(),
   ];
@@ -32,6 +34,7 @@ class _HomePageState extends State<HomePage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Feed'),
           BottomNavigationBarItem(icon: Icon(Icons.swap_horiz), label: 'Swipes'),
+          BottomNavigationBarItem(icon: Icon(Icons.kitchen), label: 'Fridges'),
           BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Rewards'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],

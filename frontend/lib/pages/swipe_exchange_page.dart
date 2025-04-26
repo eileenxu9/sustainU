@@ -9,9 +9,10 @@ class SwipeExchangePage extends StatefulWidget {
 }
 
 class _SwipeExchangePageState extends State<SwipeExchangePage> {
-  final _api = ApiService();
-  int _availableSwipes = 0;  // initialize to avoid late init errors
+  final ApiService _api = ApiService();
+  int _availableSwipes = 0;
   int _donateCount = 1;
+  int _existingSwipeId = 0;
   bool _loading = false;
   bool _initialLoading = true;
 
@@ -26,13 +27,15 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
     try {
       final swipes = await _api.fetchMealSwipes();
       if (swipes.isNotEmpty) {
-        final me = swipes.firstWhere(
+        final record = swipes.firstWhere(
           (s) => s['requested_by'] == null,
           orElse: () => swipes.first,
-        );
-        _availableSwipes = me['available_swipes'] as int;
+        ) as Map<String, dynamic>;
+        _availableSwipes = record['available_swipes'] as int;
+        _existingSwipeId = record['id'] as int;
       } else {
         _availableSwipes = 0;
+        _existingSwipeId = 0;
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -65,7 +68,6 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
       );
       return;
     }
-
     setState(() => _loading = true);
     final success = await _api.postMealSwipe(_donateCount);
     setState(() => _loading = false);
@@ -83,6 +85,39 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Failed to share swipe.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _claimSwipes() async {
+    if (_donateCount > _availableSwipes) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("You can't claim more swipes than available."),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    setState(() => _loading = true);
+    final success = await _api.claimPartialMealSwipe(_existingSwipeId, _donateCount);
+    setState(() => _loading = false);
+
+    if (success) {
+      await _loadSwipes();
+      setState(() => _donateCount = 1);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Swipes claimed successfully.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to claim swipes.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -126,7 +161,7 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
                   ),
                   const SizedBox(height: 30),
                   const Text(
-                    'Donate Your Meal Swipes',
+                    'Select Number of Swipes',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20),
@@ -158,7 +193,7 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    "You'll have \${_availableSwipes - _donateCount} swipes left.",
+                    "You'll have ${_availableSwipes - _donateCount} swipes left.",
                     style: const TextStyle(color: Colors.grey),
                   ),
                   const SizedBox(height: 40),
@@ -173,6 +208,20 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
                       child: _loading
                           ? const CircularProgressIndicator(color: Colors.white)
                           : const Text('Share Swipes', style: TextStyle(fontSize: 16)),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _loading ? null : _claimSwipes,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: _loading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text('Claim Swipes', style: TextStyle(fontSize: 16)),
                     ),
                   ),
                   const SizedBox(height: 10),

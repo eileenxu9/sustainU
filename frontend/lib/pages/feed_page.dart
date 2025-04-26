@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import 'post_details_page.dart';  
+import 'post_food_sharing_page.dart';
 
 class FeedPage extends StatefulWidget {
   const FeedPage({super.key});
@@ -12,7 +14,7 @@ class _FeedPageState extends State<FeedPage> {
   final _api = ApiService();
   late Future<List<dynamic>> _feedFuture;
   String _category = 'All';
-  final _categories = [
+  final _categories = <String>[
     'All',
     'Campus Event Leftovers',
     'Extra Groceries',
@@ -46,6 +48,14 @@ class _FeedPageState extends State<FeedPage> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
+        child: const Icon(Icons.add),
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PostFoodSharingPage()),
+        ),
+      ),
       body: Column(
         children: [
           Padding(
@@ -54,12 +64,7 @@ class _FeedPageState extends State<FeedPage> {
               value: _category,
               onChanged: (v) => setState(() => _category = v!),
               items: _categories
-                  .map(
-                    (c) => DropdownMenuItem<String>(
-                      value: c,
-                      child: Text(c),
-                    ),
-                  )
+                  .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                   .toList(),
             ),
           ),
@@ -68,32 +73,46 @@ class _FeedPageState extends State<FeedPage> {
               future: _feedFuture,
               builder: (ctx, snap) {
                 if (snap.connectionState != ConnectionState.done) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (snap.hasError) {
-                  return Center(
-                    child: Text('Error: ${snap.error}'),
-                  );
+                  return Center(child: Text('Error: ${snap.error}'));
                 }
                 final items = snap.data!;
                 return ListView.builder(
                   itemCount: items.length,
                   itemBuilder: (_, i) {
                     final it = items[i];
+                    // parse timestamp into DateTime (fallback to now)
+                    DateTime pickupDate;
+                    try {
+                      pickupDate = DateTime.parse(it['timestamp'] as String);
+                    } catch (_) {
+                      pickupDate = DateTime.now();
+                    }
                     return Card(
                       margin: const EdgeInsets.symmetric(
                         horizontal: 10,
                         vertical: 5,
                       ),
                       child: ListTile(
-                        title: Text(
-                          it['name'] ?? it['restaurant_name'] ?? '',
-                        ),
-                        subtitle: Text(
-                          it['description'] ?? '',
-                        ),
+                        title: Text(it['name'] ?? it['restaurant_name'] ?? ''),
+                        subtitle: Text(it['description'] ?? ''),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => PostDetailsPage(
+                                title: it['name'] ?? it['restaurant_name'] ?? '',
+                                description: it['description'] ?? '',
+                                pickupDate: pickupDate,
+                                donorName: 'User ${it['posted_by']}', // or fetch more detail
+                                donorNetId: '',                           // fill if available
+                                type: it['location'] ?? '',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     );
                   },
