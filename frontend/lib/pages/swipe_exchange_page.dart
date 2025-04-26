@@ -10,7 +10,7 @@ class SwipeExchangePage extends StatefulWidget {
 
 class _SwipeExchangePageState extends State<SwipeExchangePage> {
   final _api = ApiService();
-  late int _availableSwipes;
+  int _availableSwipes = 0;  // initialize to avoid late init errors
   int _donateCount = 1;
   bool _loading = false;
   bool _initialLoading = true;
@@ -25,16 +25,18 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
     setState(() => _initialLoading = true);
     try {
       final swipes = await _api.fetchMealSwipes();
-      final me = swipes.firstWhere(
-        (s) => s['requested_by'] == null,
-        orElse: () => swipes.first,
-      );
-      setState(() {
+      if (swipes.isNotEmpty) {
+        final me = swipes.firstWhere(
+          (s) => s['requested_by'] == null,
+          orElse: () => swipes.first,
+        );
         _availableSwipes = me['available_swipes'] as int;
-      });
+      } else {
+        _availableSwipes = 0;
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading swipes: \$e')),
+        SnackBar(content: Text('Error loading swipes: $e')),
       );
     } finally {
       setState(() => _initialLoading = false);
@@ -156,7 +158,7 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    "You'll have \$${_availableSwipes - _donateCount} swipes left.",
+                    "You'll have \${_availableSwipes - _donateCount} swipes left.",
                     style: const TextStyle(color: Colors.grey),
                   ),
                   const SizedBox(height: 40),

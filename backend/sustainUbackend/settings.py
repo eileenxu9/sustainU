@@ -43,6 +43,18 @@ INSTALLED_APPS = [
     'dj_rest_auth',               
 ]
 
+REST_FRAMEWORK = {
+    # Allow both session and token auth
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    # Globally enforce that most views require an authenticated user
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",

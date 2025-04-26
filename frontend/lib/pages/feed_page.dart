@@ -3,6 +3,7 @@ import '../services/api_service.dart';
 
 class FeedPage extends StatefulWidget {
   const FeedPage({super.key});
+
   @override
   _FeedPageState createState() => _FeedPageState();
 }
@@ -11,7 +12,12 @@ class _FeedPageState extends State<FeedPage> {
   final _api = ApiService();
   late Future<List<dynamic>> _feedFuture;
   String _category = 'All';
-  final _categories = ['All', 'Campus Event Leftovers', 'Extra Groceries', 'Restaurant Deals'];
+  final _categories = [
+    'All',
+    'Campus Event Leftovers',
+    'Extra Groceries',
+    'Restaurant Deals',
+  ];
 
   @override
   void initState() {
@@ -22,7 +28,24 @@ class _FeedPageState extends State<FeedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Feed')),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        title: const Text('Feed'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Image.asset(
+              'images/NYUTorch.png',
+              width: 30,
+              height: 30,
+            ),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
@@ -30,7 +53,14 @@ class _FeedPageState extends State<FeedPage> {
             child: DropdownButton<String>(
               value: _category,
               onChanged: (v) => setState(() => _category = v!),
-              items: _categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+              items: _categories
+                  .map(
+                    (c) => DropdownMenuItem<String>(
+                      value: c,
+                      child: Text(c),
+                    ),
+                  )
+                  .toList(),
             ),
           ),
           Expanded(
@@ -38,10 +68,14 @@ class _FeedPageState extends State<FeedPage> {
               future: _feedFuture,
               builder: (ctx, snap) {
                 if (snap.connectionState != ConnectionState.done) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
                 }
                 if (snap.hasError) {
-                  return Center(child: Text('Error: ${snap.error}'));
+                  return Center(
+                    child: Text('Error: ${snap.error}'),
+                  );
                 }
                 final items = snap.data!;
                 return ListView.builder(
@@ -49,10 +83,17 @@ class _FeedPageState extends State<FeedPage> {
                   itemBuilder: (_, i) {
                     final it = items[i];
                     return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       child: ListTile(
-                        title: Text(it['name'] ?? it['restaurant_name'] ?? ''),
-                        subtitle: Text(it['description'] ?? ''),
+                        title: Text(
+                          it['name'] ?? it['restaurant_name'] ?? '',
+                        ),
+                        subtitle: Text(
+                          it['description'] ?? '',
+                        ),
                       ),
                     );
                   },

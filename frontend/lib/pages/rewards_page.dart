@@ -3,6 +3,7 @@ import '../services/api_service.dart';
 
 class RewardsPage extends StatefulWidget {
   const RewardsPage({super.key});
+
   @override
   _RewardsPageState createState() => _RewardsPageState();
 }
@@ -74,8 +75,15 @@ class _RewardsPageState extends State<RewardsPage> {
         final pts = snap.data ?? 0;
         return Scaffold(
           appBar: AppBar(
+            backgroundColor: Theme.of(context).primaryColor,
             title: const Text('Rewards'),
             centerTitle: true,
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 16.0),
+                child: Image.asset('images/NYUTorch.png', width: 30, height: 30),
+              ),
+            ],
           ),
           body: SingleChildScrollView(
             child: Padding(
