@@ -1,22 +1,27 @@
 from rest_framework import serializers
-from .models import Student, Teacher, Restaurant, Food
+from .models import User, MealSwipe, FoodItem, RestaurantDeal, Incentive
 
-class StudentSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Student
+        model = User
         fields = '__all__'
 
-class TeacherSerializer(serializers.ModelSerializer):
+class MealSwipeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Teacher
+        model = MealSwipe
         fields = '__all__'
 
-class RestaurantSerializer(serializers.ModelSerializer):
+class FoodItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Restaurant
+        model = FoodItem
         fields = '__all__'
 
-class FoodSerializer(serializers.ModelSerializer):
+class RestaurantDealSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Food
+        model = RestaurantDeal
+        fields = '__all__'
+
+class IncentiveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Incentive
         fields = '__all__'

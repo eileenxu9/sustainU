@@ -1,24 +1,29 @@
 from rest_framework import viewsets
-from .models import Student, Teacher, Restaurant, Food
+from .models import User, MealSwipe, FoodItem, RestaurantDeal, Incentive
 from .serializers import (
-    StudentSerializer,
-    TeacherSerializer,
-    RestaurantSerializer,
-    FoodSerializer
+    UserSerializer,
+    MealSwipeSerializer,
+    FoodItemSerializer,
+    RestaurantDealSerializer,
+    IncentiveSerializer
 )
 
-class StudentViewSet(viewsets.ModelViewSet):
-    queryset = Student.objects.all()
-    serializer_class = StudentSerializer
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
-class TeacherViewSet(viewsets.ModelViewSet):
-    queryset = Teacher.objects.all()
-    serializer_class = TeacherSerializer
+class MealSwipeViewSet(viewsets.ModelViewSet):
+    queryset = MealSwipe.objects.all()
+    serializer_class = MealSwipeSerializer
 
-class RestaurantViewSet(viewsets.ModelViewSet):
-    queryset = Restaurant.objects.all()
-    serializer_class = RestaurantSerializer
+class FoodItemViewSet(viewsets.ModelViewSet):
+    queryset = FoodItem.objects.all()
+    serializer_class = FoodItemSerializer
 
-class FoodViewSet(viewsets.ModelViewSet):
-    queryset = Food.objects.all()
-    serializer_class = FoodSerializer
+class RestaurantDealViewSet(viewsets.ModelViewSet):
+    queryset = RestaurantDeal.objects.all()
+    serializer_class = RestaurantDealSerializer
+
+class IncentiveViewSet(viewsets.ModelViewSet):
+    queryset = Incentive.objects.all()
+    serializer_class = IncentiveSerializer
