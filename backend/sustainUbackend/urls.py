@@ -17,4 +17,5 @@ router.register(r'incentives', IncentiveViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('auth/', include('dj_rest_auth.urls')),  
 ]
