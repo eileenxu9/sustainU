@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 // import 'screens/meal_swipe_screen.dart'; 
 // import 'screens/post_food_sharing_screen.dart'; 
 // import 'screens/post_details_screen.dart';
-
+import 'screens/feed_page.dart';
 
 void main() {
   runApp(const SustainUApp());
@@ -15,10 +15,11 @@ class SustainUApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      // home: LoginPage(),
       // home: MealSwipeScreen(),
       // home: PostFoodSharingScreen(),
       // home: PostDetailsScreen(title: "Bagels", description: "Good Bagels", pickupDate: DateTime.now(), donorName: "Tian Wang", donorNetId: "tw2445", type: "Leftover")
+      home: FeedPage(),
     );
   }
 }
