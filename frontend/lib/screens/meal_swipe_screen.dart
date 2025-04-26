@@ -62,7 +62,7 @@ class _MealSwipeScreenState extends State<MealSwipeScreen> {
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 16.0),
-            child: Image.asset('images/NYUTorch.png', width: 30, height: 30,),
+            child: Image.asset('images/NYU_Torch.png', width: 30, height: 30,),
           ),
         ],
       ),
