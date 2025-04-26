@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 // import 'screens/meal_swipe_screen.dart'; 
 // import 'screens/post_food_sharing_screen.dart'; 
+// import 'screens/post_details_screen.dart';
 
 
 void main() {
@@ -17,6 +18,7 @@ class SustainUApp extends StatelessWidget {
       home: LoginPage(),
       // home: MealSwipeScreen(),
       // home: PostFoodSharingScreen(),
+      // home: PostDetailsScreen(title: "Bagels", description: "Good Bagels", pickupDate: DateTime.now(), donorName: "Tian Wang", donorNetId: "tw2445", type: "Leftover")
     );
   }
 }
