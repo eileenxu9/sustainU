@@ -192,6 +192,15 @@ class ApiService {
   );
   return res.statusCode == 200;
 }
-
+  /// Update user's points after redemption.
+Future<bool> updatePoints(int newPoints) async {
+  final token = await getToken();
+  final res = await http.patch(
+    Uri.parse('http://127.0.0.1:8000/incentives/1/'), // Adjust incentive ID if needed
+    headers: _authHeaders(token),
+    body: jsonEncode({'points': newPoints}),
+  );
+  return res.statusCode == 200;
+}
 
 }
