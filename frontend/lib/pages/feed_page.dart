@@ -62,7 +62,12 @@ class _FeedPageState extends State<FeedPage> {
             padding: const EdgeInsets.all(10),
             child: DropdownButton<String>(
               value: _category,
-              onChanged: (v) => setState(() => _category = v!),
+              onChanged: (v) {
+                setState(() {
+                  _category = v!;
+                  _feedFuture = _api.fetchFeed(category: _category);
+                });
+              },
               items: _categories
                   .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                   .toList(),
@@ -83,7 +88,6 @@ class _FeedPageState extends State<FeedPage> {
                   itemCount: items.length,
                   itemBuilder: (_, i) {
                     final it = items[i];
-                    // parse timestamp into DateTime (fallback to now)
                     DateTime pickupDate;
                     try {
                       pickupDate = DateTime.parse(it['timestamp'] as String);
@@ -106,9 +110,10 @@ class _FeedPageState extends State<FeedPage> {
                                 title: it['name'] ?? it['restaurant_name'] ?? '',
                                 description: it['description'] ?? '',
                                 pickupDate: pickupDate,
-                                donorName: 'User ${it['posted_by']}', // or fetch more detail
-                                donorNetId: '',                           // fill if available
+                                donorName: 'User ${it['posted_by']}', 
+                                donorNetId: '',
                                 type: it['location'] ?? '',
+                                postId: it['id'], // <-- Pass the postId here!
                               ),
                             ),
                           );
