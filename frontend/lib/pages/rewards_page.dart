@@ -12,7 +12,7 @@ class _RewardsPageState extends State<RewardsPage> {
   final _api = ApiService();
   late Future<int> _pointsFuture;
 
-  // Define your available rewards here
+  // Available rewards
   final List<Map<String, dynamic>> _rewards = [
     {'points': 3, 'label': '\$10 Dining Dollars'},
     {'points': 5, 'label': 'NYU Eats Merch'},
@@ -43,7 +43,9 @@ class _RewardsPageState extends State<RewardsPage> {
       return;
     }
 
-    final success = await _api.redeemReward();
+    final newPoints = pts - cost;
+    final success = await _api.updatePoints(newPoints); // 🔥 Use the new updatePoints()
+
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
