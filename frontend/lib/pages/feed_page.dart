@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import 'post_details_page.dart';  
+import 'post_details_page.dart';
 import 'post_food_sharing_page.dart';
 
 class FeedPage extends StatefulWidget {
@@ -27,6 +27,12 @@ class _FeedPageState extends State<FeedPage> {
     _feedFuture = _api.fetchFeed();
   }
 
+  void _refreshFeed() {
+    setState(() {
+      _feedFuture = _api.fetchFeed(category: _category);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,10 +57,14 @@ class _FeedPageState extends State<FeedPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
         child: const Icon(Icons.add),
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const PostFoodSharingPage()),
-        ),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PostFoodSharingPage()),
+          ).then((_) {
+            _refreshFeed(); // Reload after posting food too
+          });
+        },
       ),
       body: Column(
         children: [
@@ -110,13 +120,16 @@ class _FeedPageState extends State<FeedPage> {
                                 title: it['name'] ?? it['restaurant_name'] ?? '',
                                 description: it['description'] ?? '',
                                 pickupDate: pickupDate,
-                                donorName: 'User ${it['posted_by']}', 
+                                donorName: 'User ${it['posted_by']}',
                                 donorNetId: '',
                                 type: it['location'] ?? '',
-                                postId: it['id'], // <-- Pass the postId here!
+                                postId: it['id'], // passing postId
                               ),
                             ),
-                          );
+                          ).then((_) {
+                            // After coming back from PostDetailsPage, reload feed
+                            _refreshFeed();
+                          });
                         },
                       ),
                     );
@@ -130,3 +143,4 @@ class _FeedPageState extends State<FeedPage> {
     );
   }
 }
+
