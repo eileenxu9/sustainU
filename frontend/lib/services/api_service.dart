@@ -184,4 +184,14 @@ class ApiService {
     );
     return res.statusCode == 201;
   }
+  Future<bool> claimFoodItem(int id) async {
+  final token = await getToken();
+  final res = await http.patch(
+    Uri.parse('$_baseUrl' 'food-items/$id/claim/'),
+    headers: _authHeaders(token),
+  );
+  return res.statusCode == 200;
+}
+
+
 }
