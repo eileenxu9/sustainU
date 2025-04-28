@@ -37,6 +37,24 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text(
+              'SustainU',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+            const SizedBox(height: 10),
+            // full-width header image
+            Container(
+              width: double.infinity,
+              child: Image.asset(
+                'images/wsp.jpg',
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 24),
             TextField(controller: _userCtrl, decoration: const InputDecoration(hintText: 'Username')),
             const SizedBox(height: 16),
             TextField(controller: _passCtrl, decoration: const InputDecoration(hintText: 'Password'), obscureText: true),
@@ -49,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: _loading ? null : _login,
               child: _loading
                   ? const CircularProgressIndicator()
-                  : const Text('Log In'),
+                  : const Text('Login'),
             ),
             const SizedBox(height: 12),
             TextButton(

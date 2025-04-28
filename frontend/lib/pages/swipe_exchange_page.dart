@@ -1,3 +1,6 @@
+// lib/pages/swipe_exchange_page.dart
+
+import 'dart:math';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
@@ -10,11 +13,11 @@ class SwipeExchangePage extends StatefulWidget {
 
 class _SwipeExchangePageState extends State<SwipeExchangePage> {
   final ApiService _api = ApiService();
-  int _availableSwipes = 0;
-  int _donateCount = 1;
-  int _existingSwipeId = 0;
-  bool _loading = false;
-  bool _initialLoading = true;
+  int _availableSwipes    = 0;  // user’s current balance
+  int _donateCount        = 1;  // how many the user wants to give
+  int _donationSwipes     = 0;  // how many swipes remain in the first donation record
+  bool _loading           = false;
+  bool _initialLoading    = true;
 
   @override
   void initState() {
@@ -25,17 +28,20 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
   Future<void> _loadSwipes() async {
     setState(() => _initialLoading = true);
     try {
-      final swipes = await _api.fetchMealSwipes();
-      if (swipes.isNotEmpty) {
-        final record = swipes.firstWhere(
-          (s) => s['requested_by'] == null,
-          orElse: () => swipes.first,
+      // 1) get your current swipe count
+      _availableSwipes = await _api.fetchMySwipes();
+
+      // 2) look for the first unclaimed donation
+      final history = await _api.fetchMealSwipeHistory();
+      if (history.isNotEmpty) {
+        final record = history.firstWhere(
+          (s) => s['requested_by'] == null && (s['available_swipes'] as int) > 0,
+          orElse: () => history.first,
         ) as Map<String, dynamic>;
-        _availableSwipes = record['available_swipes'] as int;
-        _existingSwipeId = record['id'] as int;
+
+        _donationSwipes   = record['available_swipes'] as int;
       } else {
-        _availableSwipes = 0;
-        _existingSwipeId = 0;
+        _donationSwipes  = 0;
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -47,9 +53,7 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
   }
 
   void _increment() {
-    if (_donateCount < _availableSwipes) {
-      setState(() => _donateCount++);
-    }
+    setState(() => _donateCount++);
   }
 
   void _decrement() {
@@ -69,10 +73,13 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
       return;
     }
     setState(() => _loading = true);
-    final success = await _api.postMealSwipe(_donateCount);
+
+    final ok1 = await _api.spendSwipes(_donateCount);
+    final ok2 = await _api.postMealSwipe(_donateCount);
+
     setState(() => _loading = false);
 
-    if (success) {
+    if (ok1 && ok2) {
       await _loadSwipes();
       setState(() => _donateCount = 1);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -92,22 +99,26 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
   }
 
   Future<void> _claimSwipes() async {
-    if (_donateCount > _availableSwipes) {
+    if (_donationSwipes == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("You can't claim more swipes than available."),
+          content: Text("No swipes available to claim."),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
+
     setState(() => _loading = true);
-    final success = await _api.claimPartialMealSwipe(_existingSwipeId, _donateCount);
+
+    // claim up to 2, but never more than what's in the donation record
+    final toClaim = min(2, _donationSwipes);
+    final ok      = await _api.claimMealSwipe(toClaim);
+
     setState(() => _loading = false);
 
-    if (success) {
+    if (ok) {
       await _loadSwipes();
-      setState(() => _donateCount = 1);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Swipes claimed successfully.'),
@@ -130,10 +141,6 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         title: const Text('Meal Swipe Exchange'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -148,6 +155,7 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  // 1) show user’s current balance
                   Card(
                     color: Theme.of(context).primaryColor.withOpacity(0.1),
                     child: ListTile(
@@ -159,7 +167,10 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
                       subtitle: const Text('Last synced: just now'),
                     ),
                   ),
+
                   const SizedBox(height: 30),
+
+                  // 2) donation controls
                   const Text(
                     'Select Number of Swipes',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -191,11 +202,6 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    "You'll have ${_availableSwipes - _donateCount} swipes left.",
-                    style: const TextStyle(color: Colors.grey),
-                  ),
                   const SizedBox(height: 40),
                   SizedBox(
                     width: double.infinity,
@@ -210,7 +216,10 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
                           : const Text('Share Swipes', style: TextStyle(fontSize: 16)),
                     ),
                   ),
-                  const SizedBox(height: 10),
+
+                  const SizedBox(height: 20),
+
+                  // 3) claim button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -222,18 +231,6 @@ class _SwipeExchangePageState extends State<SwipeExchangePage> {
                       child: _loading
                           ? const CircularProgressIndicator(color: Colors.white)
                           : const Text('Claim Swipes', style: TextStyle(fontSize: 16)),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Theme.of(context).primaryColor),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      child: Text('Cancel', style: TextStyle(fontSize: 16, color: Theme.of(context).primaryColor)),
                     ),
                   ),
                 ],

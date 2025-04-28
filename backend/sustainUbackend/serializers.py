@@ -3,9 +3,16 @@ from .models import User, MealSwipe, FoodItem, RestaurantDeal, Incentive
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = '__all__'
-
+        model  = User
+        fields = [
+            'id',
+            'username',
+            'email',
+            'role',
+            'available_swipes',
+            'points',
+        ]
+    
 class MealSwipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = MealSwipe

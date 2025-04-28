@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 
 // 🎨 Colors and Fonts
 const Color primaryPurple = Color(0xFF57068C);
@@ -13,6 +14,7 @@ class PostDetailsPage extends StatelessWidget {
   final String donorName;
   final String donorNetId;
   final String type;
+  final int postId;
 
   const PostDetailsPage({
     super.key,
@@ -22,10 +24,13 @@ class PostDetailsPage extends StatelessWidget {
     required this.donorName,
     required this.donorNetId,
     required this.type,
+    required this.postId,
   });
 
   @override
   Widget build(BuildContext context) {
+    final _api = ApiService();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: primaryPurple,
@@ -40,7 +45,11 @@ class PostDetailsPage extends StatelessWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: Image.asset('images/NYUTorch.png', width: 30, height: 30),
+            child: Image.asset(
+              'images/NYUTorch.png',
+              width: 30,
+              height: 30,
+            ),
           ),
         ],
       ),
@@ -70,7 +79,7 @@ class PostDetailsPage extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: const Color(0xFFF5F5F5), // Light gray background
+                color: const Color(0xFFF5F5F5),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -85,7 +94,8 @@ class PostDetailsPage extends StatelessWidget {
                   _buildSection(
                     icon: Icons.calendar_today,
                     label: 'Pickup Date',
-                    content: '${pickupDate.month}/${pickupDate.day}/${pickupDate.year}',
+                    content:
+                        '${pickupDate.month}/${pickupDate.day}/${pickupDate.year}',
                   ),
                   const SizedBox(height: 20),
                   _buildSection(
@@ -109,8 +119,46 @@ class PostDetailsPage extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  // TODO: Add your request logic here
+                onPressed: () async {
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('Confirm Request'),
+                      content: const Text(
+                        'Are you sure you want to claim this food item?',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, false),
+                          child: const Text('Cancel'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => Navigator.pop(ctx, true),
+                          child: const Text('Claim'),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (confirmed == true) {
+                    final success = await _api.claimFoodItem(postId);
+                    if (success) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Item successfully claimed!'),
+                        ),
+                      );
+                      Navigator.pop(context); // Back to feed
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Failed to claim. It may have been taken already.',
+                          ),
+                        ),
+                      );
+                    }
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryPurple,
@@ -135,7 +183,11 @@ class PostDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSection({required IconData icon, required String label, required String content}) {
+  Widget _buildSection({
+    required IconData icon,
+    required String label,
+    required String content,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

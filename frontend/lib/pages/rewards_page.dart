@@ -27,7 +27,7 @@ class _RewardsPageState extends State<RewardsPage> {
 
   void _refreshPoints() {
     setState(() {
-      _pointsFuture = _api.fetchPoints();
+      _pointsFuture = _api.fetchMyPoints();
     });
   }
 
@@ -43,7 +43,7 @@ class _RewardsPageState extends State<RewardsPage> {
       return;
     }
 
-    final success = await _api.redeemReward();
+    final success = await _api.deductPoints(cost);
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

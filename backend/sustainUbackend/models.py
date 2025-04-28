@@ -9,6 +9,15 @@ class User(AbstractUser):
         choices=[("student", "Student"), ("admin", "Admin"), ("restaurant", "Restaurant")],
         default="student"
     )
+    # ── new “current” counters ──────────────────────────
+    available_swipes = models.IntegerField(
+        default=0,
+        help_text="How many swipes this user has available right now",
+    )
+    points = models.IntegerField(
+        default=0,
+        help_text="How many incentive points this user has right now",
+    )
 
     # override AbstractUser.groups to avoid reverse-accessor collision
     groups = models.ManyToManyField(
@@ -28,6 +37,7 @@ class User(AbstractUser):
         related_name='sustainubackend_user_permissions',
         related_query_name='sustainubackend_user_permission',
     )
+
 
     def __str__(self):
         # AbstractUser already has `username` (and we’ve enforced unique email)

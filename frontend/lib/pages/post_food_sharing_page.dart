@@ -123,7 +123,7 @@ class _PostFoodSharingPageState extends State<PostFoodSharingPage> {
             DropdownButtonFormField<String>(
               value: _selectedType,
               decoration: const InputDecoration(labelText: 'Type'),
-              items: ['Grocery', 'Leftover']
+              items: ['Leftovers']
                   .map(
                     (t) => DropdownMenuItem(
                       value: t,
