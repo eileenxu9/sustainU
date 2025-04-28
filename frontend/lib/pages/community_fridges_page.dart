@@ -19,7 +19,7 @@ class _CommunityFridgesPageState extends State<CommunityFridgesPage> {
 
   // Initialize Google Places with your API key
   final _places = GoogleMapsPlaces(
-    apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']!, // TODO: Replace with your actual API key
+    apiKey: dotenv.env['GOOGLE_MAPS_API_KEY']!,
   );
 
   @override
@@ -29,13 +29,15 @@ class _CommunityFridgesPageState extends State<CommunityFridgesPage> {
   }
 
   Future<void> _searchNearbyFridges() async {
-    // search within 2km radius
     final response = await _places.searchNearbyWithRadius(
       Location(lat: _nyuCenter.latitude, lng: _nyuCenter.longitude),
       2000,
       keyword: 'community fridge',
       type: 'establishment',
     );
+
+    // **VERY IMPORTANT**: bail out if the widget is no longer in the tree
+    if (!mounted) return;
 
     if (response.status == "OK") {
       final results = response.results;
@@ -60,7 +62,7 @@ class _CommunityFridgesPageState extends State<CommunityFridgesPage> {
         }
       });
     } else {
-      // handle error or zero results
+      // safe to log without calling setState
       debugPrint('Places API error: ${response.errorMessage}');
     }
   }
