@@ -110,10 +110,7 @@ class _PostFoodSharingPageState extends State<PostFoodSharingPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Post created!')),
       );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const FeedPage()),
-      );
+      Navigator.of(context).popUntil((route) => route.isFirst);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
