@@ -30,6 +30,10 @@ SustainU is a proof‑of‑concept mobile application built in Flutter, with a b
    - Install PostgreSQL (v12+ recommended).  
    - Create a database and user for sustainU (see **Database Setup** below).
 
+---
+
+## Setup Instructions
+
 ## 1. Clone the repo
 
 ```bash
