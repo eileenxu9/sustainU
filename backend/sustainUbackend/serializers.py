@@ -12,7 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
             'available_swipes',
             'points',
         ]
-    
+
 class MealSwipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = MealSwipe
@@ -25,9 +25,21 @@ class FoodItemSerializer(serializers.ModelSerializer):
         read_only_fields = ['posted_by']
 
 class RestaurantDealSerializer(serializers.ModelSerializer):
+    # expose the poster’s username, but don’t expect it in the input JSON
+    posted_by = serializers.ReadOnlyField(source='posted_by.username')
+
     class Meta:
         model = RestaurantDeal
-        fields = '__all__'
+        # explicitly list the fields so we can mark read_only_fields
+        fields = [
+            'id',
+            'restaurant_name',
+            'deal_description',
+            'location',
+            'timestamp',
+            'posted_by',
+        ]
+        read_only_fields = ['id', 'timestamp', 'posted_by']
 
 class IncentiveSerializer(serializers.ModelSerializer):
     class Meta:

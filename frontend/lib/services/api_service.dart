@@ -141,15 +141,47 @@ class ApiService {
 
   // ─── Other Resources ───────────────────────────────────────────────
 
+  /// Fetch both food‐items and restaurant‐deals and return them together.
   Future<List<dynamic>> fetchFeed() async {
     final token = await getToken();
-    final res = await http.get(
-      Uri.parse('$_baseUrl' 'food-items/'),
-      headers: _authHeaders(token),
-    );
-    if (res.statusCode == 200) return jsonDecode(res.body) as List<dynamic>;
-    throw Exception('Failed to load feed: ${res.statusCode}');
+    final headers = _authHeaders(token);
+
+    // 1) get food items
+    final foodRes = await http.get(Uri.parse('$_baseUrl' 'food-items/'), headers: headers);
+    if (foodRes.statusCode != 200) {
+      throw Exception('Failed to load food items: ${foodRes.statusCode}');
+    }
+    final List<dynamic> foods = jsonDecode(foodRes.body);
+
+    // 2) get restaurant deals
+    final dealRes = await http.get(Uri.parse('$_baseUrl' 'restaurant-deals/'), headers: headers);
+    if (dealRes.statusCode != 200) {
+      throw Exception('Failed to load restaurant deals: ${dealRes.statusCode}');
+    }
+    final List<dynamic> rawDeals = jsonDecode(dealRes.body);
+
+    // 3) normalize your deal objects so they look like food-items in your UI
+    final deals = rawDeals.map((d) {
+      return {
+        'id': d['id'],
+        // this key signals “isDeal” in your FeedPage
+        'restaurant_name': d['restaurant_name'],
+        // we rename for subtitle consistency
+        'description': d['deal_description'],
+        'location': d['location'],
+        'timestamp': d['timestamp'],
+        'posted_by': d['posted_by'],
+        // no 'claimed_by' on deals, so it's always unclaimed
+      };
+    });
+
+    // 4) combine
+    return [
+      ...foods,
+      ...deals,
+    ];
   }
+
 
   Future<bool> createFoodItem({
     required String name,
