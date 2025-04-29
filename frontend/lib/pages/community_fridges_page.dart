@@ -32,7 +32,7 @@ class _CommunityFridgesPageState extends State<CommunityFridgesPage> {
     final response = await _places.searchNearbyWithRadius(
       Location(lat: _nyuCenter.latitude, lng: _nyuCenter.longitude),
       2000,
-      keyword: 'community fridge',
+      keyword: 'food bank',
       type: 'establishment',
     );
 
